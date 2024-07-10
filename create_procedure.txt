@@ -1,0 +1,22 @@
+-- Change the delimiter
+DELIMITER //
+
+-- Create the stored procedure
+CREATE PROCEDURE GetCustomerBookings(IN customerNo INT)
+BEGIN
+    SELECT b.bookingNo, b.bookingDate, t.tripNo, t.recurrence, t.numberOfPersons, t.isActivated
+    FROM Booking b
+    JOIN Trip t ON b.bookingNo = t.requestedBy
+    WHERE b.bookedBy = customerNo;
+END //
+
+-- Reset the delimiter
+DELIMITER ;
+
+
+-- Verify the procedure creation
+SHOW PROCEDURE STATUS WHERE Db = 'transport_db';
+
+SELECT ROUTINE_NAME, ROUTINE_TYPE 
+FROM information_schema.ROUTINES 
+WHERE ROUTINE_SCHEMA = 'transport_db' AND ROUTINE_TYPE = 'PROCEDURE';

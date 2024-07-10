@@ -1,0 +1,177 @@
+-- Create tables
+CREATE TABLE Customer (
+    customerNo INT PRIMARY KEY COMMENT 'Unique identifier for each customer',
+    houseNo VARCHAR(5) COMMENT 'House number of the customer',
+    street VARCHAR(100) COMMENT 'Street name of the customer',
+    city VARCHAR(50) COMMENT 'City of the customer',
+    postcode VARCHAR(8) COMMENT 'Postcode of the customer',
+    country VARCHAR(56) COMMENT 'Country of the customer',
+    phoneNo VARCHAR(15) COMMENT 'Phone number of the customer',
+    email VARCHAR(320) COMMENT 'Email address of the customer',
+    firstName VARCHAR(100) COMMENT 'First name of the customer',
+    lastName VARCHAR(100) COMMENT 'Last name of the customer',
+    dateBirth DATE COMMENT 'Date of birth of the customer',
+    gender ENUM('M', 'F', 'Other') COMMENT 'Gender of the customer'
+) COMMENT 'Table to store customer information';
+
+
+CREATE TABLE Booking (
+    bookingNo INT PRIMARY KEY COMMENT 'Unique identifier for each booking',
+    bookingDate DATE COMMENT 'Date of the booking',
+    bookedBy INT COMMENT 'Customer who made the booking',
+    FOREIGN KEY (bookedBy) REFERENCES Customer(customerNo)
+        ON UPDATE CASCADE ON DELETE NO ACTION
+) COMMENT 'Table to store booking information';
+
+
+CREATE TABLE Trip (
+    tripNo INT PRIMARY KEY COMMENT 'Unique identifier for each trip',
+    recurrence ENUM('one-off', 'daily', 'weekly', 'monthly', 'annually') COMMENT 'Recurrence pattern of the trip',
+    numberOfPersons INT COMMENT 'Number of persons for the trip',
+    isActivated BOOLEAN COMMENT 'Indicates whether the trip is activated',
+    requestedBy INT COMMENT 'Booking associated with the trip',
+    FOREIGN KEY (requestedBy) REFERENCES Booking(bookingNo)
+        ON UPDATE CASCADE ON DELETE CASCADE
+) COMMENT 'Table to store trip information';
+
+
+CREATE TABLE Invoice (
+    invoiceNo INT PRIMARY KEY COMMENT 'Unique identifier for each invoice',
+    issueDate DATE COMMENT 'Date when the invoice was issued',
+    invoicingPeriod DATE COMMENT 'Period covered by the invoice',
+    amountCharged REAL COMMENT 'Amount charged in the invoice',
+    paymentDueDate DATE COMMENT 'Due date for the payment',
+    paymentStatus VARCHAR(20) COMMENT 'Status of the payment',
+    bookingNo INT COMMENT 'Booking associated with the invoice',
+    FOREIGN KEY (bookingNo) REFERENCES Booking(bookingNo)
+        ON UPDATE CASCADE ON DELETE CASCADE
+) COMMENT 'Table to store invoice information';
+
+
+CREATE TABLE Stop (
+    stopNo INT PRIMARY KEY COMMENT 'Unique identifier for each stop',
+    runningNo INT COMMENT 'Running number of the stop',
+    locationData VARCHAR(100) COMMENT 'Location data of the stop',
+    plannedStopDate DATE COMMENT 'Planned date of the stop',
+    plannedStopTime TIME COMMENT 'Planned time of the stop',
+    duration INT COMMENT 'Duration of the stop in minutes',
+    stopType ENUM('pick-up', 'drop-off', 'both', 'break', 'technical') COMMENT 'Type of the stop',
+    runningNoWithinRoute INT COMMENT 'Running number within the route',
+    actualStopDate DATE COMMENT 'Actual date of the stop',
+    actualStopTime TIME COMMENT 'Actual time of the stop',
+    routeNo INT COMMENT 'Route associated with the stop',
+    FOREIGN KEY (routeNo) REFERENCES Route(routeNo)
+        ON UPDATE CASCADE ON DELETE NO ACTION
+) COMMENT 'Table to store stop information';
+
+
+CREATE TABLE Trip_Stop (
+    tripNo INT COMMENT 'Trip associated with the stop',
+    stopNo INT COMMENT 'Stop associated with the trip',
+    PRIMARY KEY (tripNo, stopNo),
+    FOREIGN KEY (tripNo) REFERENCES Trip(tripNo)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (stopNo) REFERENCES Stop(stopNo)
+        ON UPDATE CASCADE ON DELETE NO ACTION
+) COMMENT 'Table to store relationship between trips and stops';
+
+
+CREATE TABLE Staff (
+    staffNo INT PRIMARY KEY COMMENT 'Unique identifier for each staff member',
+    firstName VARCHAR(50) COMMENT 'First name of the staff member',
+    lastName VARCHAR(50) COMMENT 'Last name of the staff member',
+    houseNo VARCHAR(5) COMMENT 'House number of the staff member',
+    street VARCHAR(100) COMMENT 'Street name of the staff member',
+    city VARCHAR(50) COMMENT 'City of the staff member',
+    postcode VARCHAR(8) COMMENT 'Postcode of the staff member',
+    privatePhoneNo VARCHAR(15) COMMENT 'Private phone number of the staff member',
+    email VARCHAR(320) COMMENT 'Email address of the staff member',
+    dateBirth DATE COMMENT 'Date of birth of the staff member',
+    gender ENUM('M', 'F', 'Other') COMMENT 'Gender of the staff member',
+    position VARCHAR(20) COMMENT 'Position of the staff member',
+    startDateWork DATE COMMENT 'Start date of work for the staff member',
+    endDateWork DATE COMMENT 'End date of work for the staff member',
+    salary REAL COMMENT 'Salary of the staff member',
+    employmentStatus VARCHAR(50) COMMENT 'Employment status of the staff member'
+) COMMENT 'Table to store staff information';
+
+
+CREATE TABLE Driver (
+    staffNo INT PRIMARY KEY COMMENT 'Staff number of the driver',
+    licenceNo INT UNIQUE COMMENT 'Licence number of the driver',
+    FOREIGN KEY (staffNo) REFERENCES Staff(staffNo)
+        ON UPDATE CASCADE ON DELETE NO ACTION
+) COMMENT 'Table to store driver information';
+
+
+CREATE TABLE Vehicle_Categories (
+    vehicleCategory VARCHAR(50) PRIMARY KEY COMMENT 'Category of the vehicle',
+    staffNo INT COMMENT 'Staff number of the driver',
+    FOREIGN KEY (staffNo) REFERENCES Driver(staffNo)
+        ON UPDATE CASCADE ON DELETE CASCADE
+) COMMENT 'Table to store vehicle categories';
+
+
+CREATE TABLE Depot (
+    depotNo INT PRIMARY KEY COMMENT 'Unique identifier for each depot',
+    houseNo VARCHAR(5) COMMENT 'House number of the depot',
+    street VARCHAR(100) COMMENT 'Street name of the depot',
+    city VARCHAR(50) COMMENT 'City of the depot',
+    postcode VARCHAR(8) COMMENT 'Postcode of the depot',
+    phoneNo VARCHAR(15) COMMENT 'Phone number of the depot',
+    parkingAreaSize REAL COMMENT 'Size of the parking area at the depot',
+    overseenBy INT COMMENT 'Staff number of the manager overseeing the depot',
+    FOREIGN KEY (overseenBy) REFERENCES Staff(staffNo)
+        ON UPDATE CASCADE ON DELETE NO ACTION
+) COMMENT 'Table to store depot information';
+
+
+CREATE TABLE Vehicle (
+    vehicleNo INT PRIMARY KEY COMMENT 'Unique identifier for each vehicle',
+    registrationNo INT UNIQUE COMMENT 'Registration number of the vehicle',
+    brand VARCHAR(50) COMMENT 'Brand of the vehicle',
+    model VARCHAR(50) COMMENT 'Model of the vehicle',
+    category VARCHAR(50) COMMENT 'Category of the vehicle',
+    yearManufacture INT COMMENT 'Year of manufacture of the vehicle',
+    passengerSeatsCapacity INT COMMENT 'Passenger seats capacity of the vehicle',
+    bootSizeInLitres REAL COMMENT 'Boot size in litres of the vehicle',
+    mileage REAL COMMENT 'Mileage of the vehicle',
+    nextMaintenanceDate DATE COMMENT 'Next maintenance date of the vehicle',
+    stationedAt INT COMMENT 'Depot where the vehicle is stationed',
+    FOREIGN KEY (stationedAt) REFERENCES Depot(depotNo)
+        ON UPDATE CASCADE ON DELETE NO ACTION
+) COMMENT 'Table to store vehicle information';
+
+
+CREATE TABLE Route (
+    routeNo INT PRIMARY KEY COMMENT 'Unique identifier for each route',
+    startDepot INT COMMENT 'Starting depot of the route',
+    endDepot INT COMMENT 'Ending depot of the route',
+    plannedStartDate DATE COMMENT 'Planned start date of the route',
+    plannedStartTime TIME COMMENT 'Planned start time of the route',
+    plannedEndDate DATE COMMENT 'Planned end date of the route',
+    plannedEndTime TIME COMMENT 'Planned end time of the route',
+    actualStartDate DATE COMMENT 'Actual start date of the route',
+    actualStartTime TIME COMMENT 'Actual start time of the route',
+    actualEndDate DATE COMMENT 'Actual end date of the route',
+    actualEndTime TIME COMMENT 'Actual end time of the route',
+    currentStatus ENUM('not started', 'in progress', 'completed', 'interrupted') COMMENT 'Current status of the route',
+    FOREIGN KEY (startDepot) REFERENCES Depot(depotNo)
+        ON UPDATE CASCADE ON DELETE NO ACTION,
+    FOREIGN KEY (endDepot) REFERENCES Depot(depotNo)
+        ON UPDATE CASCADE ON DELETE NO ACTION
+) COMMENT 'Table to store route information';
+
+
+CREATE TABLE Driver_Vehicle_Route (
+    driver INT COMMENT 'Driver of the vehicle',
+    vehicle INT COMMENT 'Vehicle driven by the driver',
+    route INT COMMENT 'Route taken by the driver and vehicle',
+    PRIMARY KEY (driver, vehicle, route),
+    FOREIGN KEY (driver) REFERENCES Driver(staffNo)
+        ON UPDATE CASCADE ON DELETE NO ACTION,
+    FOREIGN KEY (vehicle) REFERENCES Vehicle(vehicleNo)
+        ON UPDATE CASCADE ON DELETE NO ACTION,
+    FOREIGN KEY (route) REFERENCES Route(routeNo)
+        ON UPDATE CASCADE ON DELETE NO ACTION
+) COMMENT 'Table to store relationship between drivers, vehicles, and routes';

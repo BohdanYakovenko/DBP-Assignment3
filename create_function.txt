@@ -1,0 +1,21 @@
+-- Create function
+DELIMITER //
+
+CREATE FUNCTION GetCustomerFullName(customerID INT) RETURNS VARCHAR(200)
+READS SQL DATA
+BEGIN
+    DECLARE fullName VARCHAR(200);
+    SELECT CONCAT(firstName, ' ', lastName) INTO fullName
+    FROM Customer
+    WHERE customerNo = customerID;
+    RETURN fullName;
+END //
+
+DELIMITER ;
+
+
+-- Verify function
+
+SELECT ROUTINE_NAME, ROUTINE_DEFINITION
+FROM information_schema.ROUTINES
+WHERE ROUTINE_TYPE='FUNCTION' AND ROUTINE_NAME='GetCustomerFullName';

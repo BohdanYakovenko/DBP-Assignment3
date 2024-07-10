@@ -1,0 +1,21 @@
+-- Create index
+CREATE INDEX idx_customer_fullname ON Customer(firstName, lastName);
+
+
+-- Optimization of function usage
+SELECT 
+    b.bookingNo, 
+    GetCustomerFullName(b.bookedBy) AS customerFullName, 
+    b.bookingDate, 
+    t.tripNo, 
+    t.recurrence, 
+    t.numberOfPersons, 
+    t.isActivated
+FROM 
+    Booking b
+JOIN 
+    Trip t ON b.bookingNo = t.requestedBy
+WHERE 
+    t.isActivated = TRUE
+ORDER BY 
+    b.bookingDate DESC;

@@ -1,0 +1,145 @@
+erDiagram
+    CUSTOMER {
+        INT customerNo PK "Unique identifier for each customer"
+        VARCHAR(5) houseNo "House number of the customer"
+        VARCHAR(100) street "Street name of the customer"
+        VARCHAR(50) city "City of the customer"
+        VARCHAR(8) postcode "Postcode of the customer"
+        VARCHAR(56) country "Country of the customer"
+        VARCHAR(15) phoneNo "Phone number of the customer"
+        VARCHAR(320) email "Email address of the customer"
+        VARCHAR(100) firstName "First name of the customer"
+        VARCHAR(100) lastName "Last name of the customer"
+        DATE dateBirth "Date of birth of the customer"
+    }
+
+    BOOKING {
+        INT bookingNo PK "Unique identifier for each booking"
+        DATE bookingDate "Date of the booking"
+        INT bookedBy FK "Customer who made the booking"
+    }
+
+    TRIP {
+        INT tripNo PK "Unique identifier for each trip"
+        INT numberOfPersons "Number of persons for the trip"
+        BOOLEAN isActivated "Indicates whether the trip is activated"
+        INT requestedBy FK "Booking associated with the trip"
+    }
+
+    INVOICE {
+        INT invoiceNo PK "Unique identifier for each invoice"
+        DATE issueDate "Date when the invoice was issued"
+        DATE invoicingPeriod "Period covered by the invoice"
+        REAL amountCharged "Amount charged in the invoice"
+        DATE paymentDueDate "Due date for the payment"
+        VARCHAR(20) paymentStatus "Status of the payment"
+        INT bookingNo FK "Booking associated with the invoice"
+    }
+
+    STOP {
+        INT stopNo PK "Unique identifier for each stop"
+        INT runningNo "Running number of the stop"
+        VARCHAR(100) locationData "Location data of the stop"
+        DATE plannedStopDate "Planned date of the stop"
+        TIME plannedStopTime "Planned time of the stop"
+        INT duration "Duration of the stop in minutes"
+        INT runningNoWithinRoute "Running number within the route"
+        DATE actualStopDate "Actual date of the stop"
+        TIME actualStopTime "Actual time of the stop"
+        INT routeNo FK "Route associated with the stop"
+    }
+
+    TRIP_STOP {
+        INT tripNo FK "Trip associated with the stop"
+        INT stopNo FK "Stop associated with the trip"
+    }
+
+    STAFF {
+        INT staffNo PK "Unique identifier for each staff member"
+        VARCHAR(50) firstName "First name of the staff member"
+        VARCHAR(50) lastName "Last name of the staff member"
+        VARCHAR(5) houseNo "House number of the staff member"
+        VARCHAR(100) street "Street name of the staff member"
+        VARCHAR(50) city "City of the staff member"
+        VARCHAR(8) postcode "Postcode of the staff member"
+        VARCHAR(15) privatePhoneNo "Private phone number of the staff member"
+        VARCHAR(320) email "Email address of the staff member"
+        DATE dateBirth "Date of birth of the staff member"
+        VARCHAR(20) position "Position of the staff member"
+        DATE startDateWork "Start date of work for the staff member"
+        DATE endDateWork "End date of work for the staff member"
+        REAL salary "Salary of the staff member"
+        VARCHAR(50) employmentStatus "Employment status of the staff member"
+    }
+
+    DRIVER {
+        INT staffNo FK "Staff number of the driver"
+        INT licenceNo PK "Licence number of the driver"
+    }
+
+    VEHICLE_CATEGORIES {
+        VARCHAR(50) vehicleCategory PK "Category of the vehicle"
+        INT staffNo FK "Staff number of the driver"
+    }
+
+    DEPOT {
+        INT depotNo PK "Unique identifier for each depot"
+        VARCHAR(5) houseNo "House number of the depot"
+        VARCHAR(100) street "Street name of the depot"
+        VARCHAR(50) city "City of the depot"
+        VARCHAR(8) postcode "Postcode of the depot"
+        VARCHAR(15) phoneNo "Phone number of the depot"
+        REAL parkingAreaSize "Size of the parking area at the depot"
+        INT overseenBy FK "Staff number of the manager overseeing the depot"
+    }
+
+    VEHICLE {
+        INT vehicleNo PK "Unique identifier for each vehicle"
+        INT registrationNo PK "Registration number of the vehicle"
+        VARCHAR(50) brand "Brand of the vehicle"
+        VARCHAR(50) model "Model of the vehicle"
+        VARCHAR(50) category "Category of the vehicle"
+        INT yearManufacture "Year of manufacture of the vehicle"
+        INT passengerSeatsCapacity "Passenger seats capacity of the vehicle"
+        REAL bootSizeInLitres "Boot size in litres of the vehicle"
+        REAL mileage "Mileage of the vehicle"
+        DATE nextMaintenanceDate "Next maintenance date of the vehicle"
+        INT stationedAt FK "Depot where the vehicle is stationed"
+    }
+
+    ROUTE {
+        INT routeNo PK "Unique identifier for each route"
+        INT startDepot FK "Starting depot of the route"
+        INT endDepot FK "Ending depot of the route"
+        DATE plannedStartDate "Planned start date of the route"
+        TIME plannedStartTime "Planned start time of the route"
+        DATE plannedEndDate "Planned end date of the route"
+        TIME plannedEndTime "Planned end time of the route"
+        DATE actualStartDate "Actual start date of the route"
+        TIME actualStartTime "Actual start time of the route"
+        DATE actualEndDate "Actual end date of the route"
+        TIME actualEndTime "Actual end time of the route"
+    }
+
+    DRIVER_VEHICLE_ROUTE {
+        INT driver FK "Driver of the vehicle"
+        INT vehicle FK "Vehicle driven by the driver"
+        INT route FK "Route taken by the driver and vehicle"
+    }
+
+    CUSTOMER ||--o{ BOOKING : makes
+    BOOKING ||--o{ TRIP : requests
+    TRIP ||--o{ TRIP_STOP : contains
+    STOP ||--o{ TRIP_STOP : is part of
+    BOOKING ||--o{ INVOICE : generates
+    STAFF ||--o{ DRIVER : is
+    DRIVER ||--o{ VEHICLE_CATEGORIES : has
+    STAFF ||--o{ DEPOT : oversees
+    DEPOT ||--o{ VEHICLE : stations
+    DEPOT ||--o{ ROUTE : starts
+    DEPOT ||--o{ ROUTE : ends
+    DRIVER ||--o{ DRIVER_VEHICLE_ROUTE : undertakes
+    VEHICLE ||--o{ DRIVER_VEHICLE_ROUTE : is used for
+    ROUTE ||--o{ DRIVER_VEHICLE_ROUTE : is taken on
+    ROUTE ||--o{ STOP : contains
+

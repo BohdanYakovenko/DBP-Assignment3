@@ -1,0 +1,9 @@
+-- Create the view with a comment in the script
+-- This view displays all active trips with associated booking and customer details.
+
+CREATE VIEW ActiveTrips AS
+SELECT t.tripNo, t.recurrence, t.numberOfPersons, t.isActivated, b.bookingDate, c.firstName, c.lastName
+FROM Trip t
+JOIN Booking b ON t.requestedBy = b.bookingNo
+JOIN Customer c ON b.bookedBy = c.customerNo
+WHERE t.isActivated = TRUE;

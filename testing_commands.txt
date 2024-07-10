@@ -1,0 +1,47 @@
+-- Select bookings with customer details
+SELECT b.bookingNo, b.bookingDate, c.firstName, c.lastName
+FROM Booking b
+JOIN Customer c ON b.bookedBy = c.customerNo;
+
+
+-- Select all trips that are activated
+SELECT * FROM Trip WHERE isActivated = TRUE;
+
+
+-- Find customer that has booking
+SELECT c.customerNo, c.firstName, c.lastName
+FROM Customer c
+JOIN Booking b ON c.customerNo = b.bookedBy
+LIMIT 1;
+
+
+-- Execute the stored procedure to get customer bookings
+CALL GetCustomerBookings(57023);
+
+
+-- Execute the function to get the full name of a customer
+SELECT GetCustomerFullName(88) AS FullName;
+
+
+-- Select from the ActiveTrips view
+SELECT * FROM ActiveTrips;
+
+
+-- Showcasing foreign key constraint
+select * from customer c where c.customerNo = 1;
+
+INSERT INTO Booking (bookingNo, bookingDate, bookedBy)
+VALUES (202, '2024-07-01', 1); -- This should fail if customer 1 does not exist
+
+
+
+-- Verify admin_user grants
+SHOW GRANTS FOR 'admin_user'@'localhost';
+
+-- Verify staff_user grants
+SHOW GRANTS FOR 'staff_user'@'localhost';
+
+-- Verify readonly_user grants
+SHOW GRANTS FOR 'readonly_user'@'localhost';
+
+

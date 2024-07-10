@@ -1,0 +1,14 @@
+-- Create the users
+CREATE USER 'admin_user'@'localhost' IDENTIFIED BY 'password1';
+CREATE USER 'staff_user'@'localhost' IDENTIFIED BY 'password2';
+CREATE USER 'readonly_user'@'localhost' IDENTIFIED BY 'password3';
+
+-- Grant the necessary privileges
+GRANT ALL PRIVILEGES ON `transport_db`.* TO 'admin_user'@'localhost' WITH GRANT OPTION;
+GRANT SELECT, INSERT, UPDATE, DELETE ON `transport_db`.* TO 'staff_user'@'localhost';
+GRANT SELECT ON `transport_db`.* TO 'readonly_user'@'localhost';
+
+-- Show grants to verify
+SHOW GRANTS FOR 'admin_user'@'localhost';
+SHOW GRANTS FOR 'staff_user'@'localhost';
+SHOW GRANTS FOR 'readonly_user'@'localhost';
